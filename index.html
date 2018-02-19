@@ -1,0 +1,108 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Bored</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.css" rel="stylesheet"  crossorigin="anonymous">
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <section id="banner">
+        <div class="container">
+            <div class="row">
+                <h1 class="col-md-12">Welcome to the General Store</h1>
+            </div>
+        </div>
+    </section>
+    <section id="main-body">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 products" v-for="prod in products">
+                    <!-- <img :src="'assets\' + {{prod.image}}"/> -->
+                    <h4>{{prod.name}}</h4>
+                    <p>{{prod.description}}</p>
+                    <p>{{prod.price}}</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section id="footer">
+        <div class="container">
+            <div class="row">
+                <p class="col-md-12">Copyright <i class="far fa-copyright"></i> | 2018.</p>
+            </div>
+        </div>
+    </section>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.13/dist/vue.js"></script>
+    <script src="script.js"></script>
+
+    <script>
+        var vm = new Vue({
+            el: '#main-body',
+            data: {
+                products: [
+                    {
+                        "name": "MMO Gaming Mouse",
+                        "description": "Best mouse for mmo gaming. ",
+                        "price": 149.99,
+                        "image": "mmoMouse.jpg"
+                    },
+                    {
+                        "name": "1080 GTX Graphics Card",
+                        "description": "Bitcoin mining hardware. ",
+                        "price": 1999.99,
+                        "image": "assets/graphicCard.jpg"
+                    },
+                    {
+                        "name": "Backlit Mechanical Keyboard",
+                        "description": "Annoy your coworkers and friends with your load clicking. ",
+                        "price": 129.99,
+                        "image": "assets/keyboard.jpg"
+                    },
+                    {
+                        "name": "Gsync Monitor",
+                        "description": "Best monitor",
+                        "price": 599.99,
+                        "image": "assets/monitor.jpg"
+                    },
+                    {
+                        "name": "Full Tower Case w/ LED Lights",
+                        "description": "Huge desktop tower",
+                        "price": 255.66,
+                        "image": "assets/fullTower.jpg"
+                    },
+                    {
+                        "name": "Gaming Chair",
+                        "description": "Taken straight out of a race car.",
+                        "price": 699.99,
+                        "image": "assets/chair.jpg"
+                    },
+                    {
+                        "name": "Turtle Beach Headset",
+                        "description": "The best headset",
+                        "price": 98.99,
+                        "image": "assets/headset.jpg"
+                    },
+                    {
+                        "name": "SSD Hard Drive",
+                        "description": "Like a normal hard drive, but vastly superior in every single way. ",
+                        "price": 155.55,
+                        "image": "assets/ssd.jpg"
+                    },
+                    {
+                        "name": "Bose Surround Sound Set Up",
+                        "description": "For the single player that doesn't need a headset. ",
+                        "price": 1200.99,
+                        "image": "assets/bose.jpg"
+                    }]
+            },
+        })
+    </script>
+</body>
+</html>
