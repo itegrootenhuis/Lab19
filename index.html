@@ -3,104 +3,203 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Bored</title>
+  <title>General Store</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.css" rel="stylesheet"  crossorigin="anonymous">
   <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <link rel="stylesheet" href="modal.css">
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-    <section id="banner">
-        <div class="container">
-            <div class="row">
-                <h1 class="col-md-12">Welcome to the General Store</h1>
-            </div>
-        </div>
-    </section>
-    <section id="main-body">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-4 products" v-for="prod in products">
-                    <!-- <img :src="'assets\' + {{prod.image}}"/> -->
-                    <h4>{{prod.name}}</h4>
-                    <p>{{prod.description}}</p>
-                    <p>{{prod.price}}</p>
+    <div id="app">
+        <section id="banner">
+            <div class="container">
+                <div class="row">
+                    <h1 class="col-md-10">Welcome to the General Store</h1>
+                    <div class="col-md-2">
+                        <button id="shop-cart" @click="showCart = true">
+                            <span id="cart-count"><b>{{counter}}</b></span>
+                            <i class="fa fa-shopping-cart"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
-    <section id="footer">
-        <div class="container">
-            <div class="row">
-                <p class="col-md-12">Copyright <i class="far fa-copyright"></i> | 2018.</p>
+        </section>
+
+        <section id="main-body">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-4 product" v-for="prod in products">
+                        <img class="prod-img" :src="prod.image"/>
+                        <h4 class="prod-name">{{prod.name}}</h4>
+                        <p class="prod-desc">{{prod.description}}</p>
+                        <p class="prod-price">{{prod.price}}</p>
+                        <input @click="selectedProdName = prod.name; selectedProdPrice = prod.price; showModal = true" class="add-to-cart btn btn-primary" type="button" value="Add to Cart">
+                    </div>
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
+
+        <modal v-if="showModal" @close="AddItemToCart(selectedProdName, selectedProdPrice, count); showModal = false; counter += count; count = 0">
+            <h3 slot="header">How many {{selectedProdName}} do you want?</h3>
+            <input v-model.number="count" slot="body" type="number">
+        </modal>
+
+        <modal v-if="showCart">
+            <h3 slot="header">Cart</h3>
+            <div slot="body" class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <p>
+                            <span class="col-md-6">Product Name</span>
+                            <span class="col-md-4">Quantity</span>
+                            <span class="col-md-2">Price</span>  
+                        </p>
+                    </div>
+                    <div class="col-md-12" v-for="item in cartItems">
+                        <p :class="AddCartTotal(item.qty, item.price)">
+                            <span class="col-md-6">{{item.name}} </span> |
+                            <span class="col-md-4">{{item.qty}} X ${{item.price}}</span> |
+                            <span class="col-md-2">${{item.qty * item.price}}</span>  
+                        </p>
+                    </div>
+                    <div class="col-md-12">
+                        <p id="cart-total" >Total : {{cartTotal}}</p>
+                    </div>
+                </div>
+            </div>
+            <button slot="footer" @click="showCart = false; cartTotal = 0; counter = 0; cartItems = []">Check out</button>
+        </modal>
+
+        <section id="footer">
+            <div class="container">
+                <div class="row">
+                    <p class="col-md-12">Copyright <i class="fa fa-copyright"></i> | 2018.</p>
+                </div>
+            </div>
+        </section>
+    </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.5.13/dist/vue.js"></script>
     <script src="script.js"></script>
 
+    <script type="text/x-template" id="modal-template">
+        <transition name="modal">
+          <div class="modal-mask">
+            <div class="modal-wrapper">
+              <div class="modal-container">
+      
+                <div class="modal-header">
+                  <slot name="header">
+                    default header
+                  </slot>
+                </div>
+      
+                <div class="modal-body">
+                  <slot name="body">
+                    default body
+                  </slot>
+                </div>
+      
+                <div class="modal-footer">
+                  <slot name="footer">
+                    <button class="modal-default-button" @click="$emit('close')">
+                      Add to Cart
+                    </button>
+                  </slot>
+                </div>
+              </div>
+            </div>
+          </div>
+        </transition>
+    </script>
+
     <script>
+        Vue.component('modal', {
+            template: '#modal-template'
+        })
+
         var vm = new Vue({
-            el: '#main-body',
+            el: '#app',
+            methods: {
+                AddItemToCart: function(prodName, prodPrice, quantity){
+                    if(quantity != 0){
+                        var item = `{"name": "`+ prodName +`", "price": "`+ prodPrice +`", "qty": "`+ quantity +`"}`;
+                        this.cartItems.push(JSON.parse(item));
+                    }
+                },
+                AddCartTotal: function(qty, price){
+                    this.cartTotal += qty * price;
+                }
+            },
             data: {
+                count: 0,
+                counter: 0,
+                cartTotal: 0,
+                cartItems: [],
+                selectedProdName: '',
+                selectedProdPrice: 0,
+                showModal: false,
+                showCart: false,
                 products: [
                     {
                         "name": "MMO Gaming Mouse",
                         "description": "Best mouse for mmo gaming. ",
                         "price": 149.99,
-                        "image": "mmoMouse.jpg"
+                        "image": "assets\\mmoMouse.jpg"
                     },
                     {
                         "name": "1080 GTX Graphics Card",
                         "description": "Bitcoin mining hardware. ",
                         "price": 1999.99,
-                        "image": "assets/graphicCard.jpg"
+                        "image": "assets\\graphicCard.jpg"
                     },
                     {
                         "name": "Backlit Mechanical Keyboard",
                         "description": "Annoy your coworkers and friends with your load clicking. ",
                         "price": 129.99,
-                        "image": "assets/keyboard.jpg"
+                        "image": "assets\\keyboard.jpg"
                     },
                     {
                         "name": "Gsync Monitor",
                         "description": "Best monitor",
                         "price": 599.99,
-                        "image": "assets/monitor.jpg"
+                        "image": "assets\\monitor.jpg"
                     },
                     {
                         "name": "Full Tower Case w/ LED Lights",
                         "description": "Huge desktop tower",
                         "price": 255.66,
-                        "image": "assets/fullTower.jpg"
+                        "image": "assets\\fullTower.jpg"
                     },
                     {
                         "name": "Gaming Chair",
                         "description": "Taken straight out of a race car.",
                         "price": 699.99,
-                        "image": "assets/chair.jpg"
+                        "image": "assets\\chair.jpg"
                     },
                     {
                         "name": "Turtle Beach Headset",
                         "description": "The best headset",
                         "price": 98.99,
-                        "image": "assets/headset.jpg"
+                        "image": "assets\\headset.jpg"
                     },
                     {
                         "name": "SSD Hard Drive",
                         "description": "Like a normal hard drive, but vastly superior in every single way. ",
                         "price": 155.55,
-                        "image": "assets/ssd.jpg"
+                        "image": "assets\\ssd.jpg"
                     },
                     {
                         "name": "Bose Surround Sound Set Up",
                         "description": "For the single player that doesn't need a headset. ",
                         "price": 1200.99,
-                        "image": "assets/bose.jpg"
-                    }]
+                        "image": "assets\\bose.jpg"
+                    }
+                ]
             },
         })
     </script>
